@@ -1,0 +1,28 @@
+/terminal 
+/card
+
+/mode echo=off trace=on
+
+# Select  Applet
+/echo "Selecting  Applet"
+/select A00000090501000101
+/echo ""
+
+# Verify Enroll PIN
+/echo "Verify Enroll PIN"
+/send 0020008008241234FFFFFFFFFF
+/echo ""
+
+# Verify Transaction
+/echo "Transaction : Match"
+/send 005923000100
+/echo ""
+
+# Get State
+/echo "Transaction : Get State"
+/send 0059260000
+/echo ""
+
+# Close Session
+/close
+

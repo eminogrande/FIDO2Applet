@@ -1,0 +1,226 @@
+###
+#  one-stop script for unload and install iba related applets
+###
+
+### Global Define
+
+/set-var applet_path ../applet
+/set-var iba_applet_path ../../iba/applet
+
+/echo enabling modes echo and trace...
+/mode echo=off trace=off
+
+
+# Define AIDs
+# iba
+
+/set-var  service_package    A000000905010002
+/set-var  iba_package      A000000905010001
+/set-var  iba_applet       A00000090501000101
+/set-var  iba_instance     A00000090501000101
+
+/set-var  iba_install_params   C9#()
+
+#iba client
+
+/set-var  ibaclient_package      A000000905010003
+/set-var  ibaclient_applet       A00000090501000301
+/set-var  ibaclient_instance     A00000090501000301
+/set-var  ibaclient_instance_2     A00000090501000302
+
+/set-var  ibaclient_install_params   C9#()
+
+# -----------------------------------------------------------------------------
+
+DEFUN remove-all-applets
+    /echo "INFO: trying to remove all applet packages/instances"
+	# jNet proprietary command： Not available in RELEASE mode
+    /send B1052000  	
+END
+
+DEFUN remove-applets
+	delete-ibaclient-applets
+	delete-iba-applets
+END
+
+DEFUN list-applets
+    try
+        ls
+    catch ${last.response.status} == 6985
+        /echo "WARNING: Cannot list applets; Please do auth first!"
+    end
+END
+
+DEFUN upload-all-applets
+    #/echo "INFO: trying to upload service package"
+    #upload -d -c -b 250 "${iba_applet_path}/com.idex.iba.service.cap"
+
+    #/echo "INFO: trying to upload iba package"
+    #upload -d -c -b 250 "${iba_applet_path}/com.idex.iba.cap"
+
+    /echo "INFO: trying to upload iba client package"
+    upload -c -b 250 "${applet_path}/com.idex.client.cap"
+END
+
+DEFUN upload-all-applets-if-needed
+    try
+        upload-all-applets
+
+    catch "${last.error}" =~ "*Failed to read CAP file*"
+        /echo "WARNING: One or more applet .CAP files could not be found."
+        /echo "WARNING: Please check the applet path: \"${applet_path}\""
+
+    catch ${last.response.status} == 6985
+        /echo "WARNING: Failed to upload applets; Please delete objects and reinstall!"
+    end
+
+    list-applets
+END
+
+
+DEFUN install-all-applets
+    install-iba-applet
+	install-ibaclient-applet
+	install-ibaclient-applet-2
+END
+
+DEFUN install-iba-applet
+    /echo "INFO: install iba applet instance"
+    install -i${iba_instance} -q${iba_install_params} ${iba_package} ${iba_applet}
+END
+
+
+DEFUN install-ibaclient-applet
+    /echo "INFO: install iba client applet instance"
+    install -i${ibaclient_instance} -q${ibaclient_install_params} ${ibaclient_package} ${ibaclient_applet}
+END
+
+DEFUN install-ibaclient-applet-2
+    /echo "INFO: install iba client applet instance 2"
+    install -i${ibaclient_instance_2} -q${ibaclient_install_params} ${ibaclient_package} ${ibaclient_applet}
+END
+
+
+DEFUN delete-iba-applets
+    /echo "INFO: trying to delete iba applet packages/instances"
+		
+	try
+		delete ${iba_instance}	
+    catch ${last.response.status} == 6a88
+        /echo "WARNING: no iba instance to be deleted"
+    end
+	
+	#ls
+
+
+	try
+		# Removed for REL
+		#delete -r  ${iba_package}  
+	
+	catch ${last.response.status} == 6a88
+        /echo "WARNING: no iba package to be deleted"
+    end	
+	
+	try
+		# Removed for REL
+		#delete  ${service_package}  
+	
+	catch ${last.response.status} == 6a88
+        /echo "WARNING: no service package to be deleted"
+    end		
+	
+	ls
+	
+END
+
+DEFUN delete-ibaclient-applets
+    /echo "INFO: trying to delete iba client applet packages/instances"
+	try
+		delete  ${ibaclient_instance}
+	
+    catch ${last.response.status} == 6a88
+        /echo "WARNING: no ibaclient instance to be deleted"
+    end
+	
+	try
+		delete  -r ${ibaclient_package}  
+	
+	catch ${last.response.status} == 6a88
+        /echo "WARNING: no ibaclient package to be deleted"
+    end
+END
+
+
+
+### Main Entry 
+#
+#   Note: please copy the two iba packages into same folder as client package
+#
+###
+
+/term
+/card
+
+
+# Need SCP02/SCP03 authentication
+
+#auth
+
+# can also use scp03 AES keys
+# skip below as above "auth" used
+
+
+
+#DBG
+#set-key 255/1/AES/404142434445464748494A4B4C4D4E4F
+#set-key 255/2/AES/404142434445464748494A4B4C4D4E4F
+#set-key 255/3/AES/404142434445464748494A4B4C4D4E4F
+
+#REL
+set-key 255/1/AES/74F46B2A4727D97A324FA0979E12D1D1
+set-key 255/2/AES/66DB726D9726A15634738282687D53CE
+set-key 255/3/AES/412F16AE6D90106DBC0920200D81AE01
+
+
+init-update  00 SCP_03_60
+ext-auth 
+
+
+
+#delete installed instances/packages: iba/ibaclient
+remove-applets
+
+#upload packages
+upload-all-applets-if-needed
+install-all-applets
+
+## Please add your iba applet perso scripts below
+## Mandatory
+
+/mode echo=off trace=on
+#82_Perso_IBA_Applet_AID.jcsh
+82_Perso_IBA_Applet_AID_REL.jcsh
+
+# Get Card Info
+/select A000000151000000
+#auth
+
+#DBG
+#set-key 255/1/AES/404142434445464748494A4B4C4D4E4F
+#set-key 255/2/AES/404142434445464748494A4B4C4D4E4F
+#set-key 255/3/AES/404142434445464748494A4B4C4D4E4F
+
+#REL
+set-key 255/1/AES/74F46B2A4727D97A324FA0979E12D1D1
+set-key 255/2/AES/66DB726D9726A15634738282687D53CE
+set-key 255/3/AES/412F16AE6D90106DBC0920200D81AE01
+
+init-update  00 SCP_03_60
+ext-auth 
+
+list-applets
+
+##
+
+## Add your client tests scripts below
+# 

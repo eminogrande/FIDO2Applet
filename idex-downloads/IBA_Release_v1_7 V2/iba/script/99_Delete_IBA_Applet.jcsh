@@ -1,0 +1,51 @@
+
+### Global Define
+
+#iba
+/set-var  service_package    A000000905010002
+/set-var  iba_package      A000000905010001
+/set-var  iba_applet       A00000090501000101
+/set-var  iba_instance     A00000090501000101
+
+
+/echo enabling modes echo and trace...
+/mode echo=off trace=on
+
+
+/terminal
+/card
+
+/echo ""
+/echo "Delete iba Applet..."
+
+init-update
+ext-auth plain
+
+ls
+
+/echo "INFO: trying to delete iba  applet packages/instances"
+		
+try
+	delete ${iba_instance}	
+catch ${last.response.status} == 6a88
+    /echo "WARNING: no iba instance to be deleted"
+end
+
+try
+	delete  -r ${iba_package}  
+
+catch ${last.response.status} == 6a88
+    /echo "WARNING: no iba package to be deleted"
+end	
+
+try
+	delete  ${service_package}  
+
+catch ${last.response.status} == 6a88
+    /echo "WARNING: no service package to be deleted"
+end	
+
+ls
+
+/echo "Delete IBA Applet Success!"
+/echo "-----------------------------------------"

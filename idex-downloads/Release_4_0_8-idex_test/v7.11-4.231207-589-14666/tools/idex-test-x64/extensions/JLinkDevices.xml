@@ -1,0 +1,7 @@
+<DataBase>
+  <Device>
+    <ChipInfo Vendor="IDEX" Name="greylock" Core="JLINK_CORE_CORTEX_M3" WorkRAMAddr="0x00200000" WorkRAMSize="0x20000"/>
+    <FlashBankInfo Name="Greylock Flash I1" BaseAddr="0x00080000" MaxSize="0x40000" Loader="GreylockFlash.elf" LoaderType="FLASH_ALGO_TYPE_OPEN" AlwaysPresent="1"/>
+    <FlashBankInfo Name="Greylock Flash D1" BaseAddr="0x00100000" MaxSize="0x40000" Loader="GreylockFlash.elf" LoaderType="FLASH_ALGO_TYPE_OPEN" AlwaysPresent="1"/>
+  </Device>
+</DataBase>

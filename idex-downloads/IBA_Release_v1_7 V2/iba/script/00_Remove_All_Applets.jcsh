@@ -1,0 +1,18 @@
+/terminal
+/card
+
+/echo ""
+/echo "Remove All Applets..."
+/send B1052000
+
+/echo ""
+/echo "Reset Biometrics"
+/send ED57C1000100
+
+init-update
+ext-auth plain
+
+ls
+
+/echo "Remove All Applets Success!"
+/echo "-----------------------------------------"

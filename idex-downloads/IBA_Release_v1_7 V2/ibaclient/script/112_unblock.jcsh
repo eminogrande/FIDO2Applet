@@ -1,0 +1,38 @@
+/terminal 
+/card
+
+/mode echo=off trace=on
+
+# Select  Applet
+
+/echo "Selecting  Applet"
+/select A00000090501000101
+
+/echo ""
+
+# Unblock BTC
+/echo "Unblock BTC"
+/send 00210000029105
+/echo ""
+
+
+auth
+
+# Unblock BTC
+/echo "Unblock BTC"
+/send 00210000029105
+/echo ""
+
+# Unblock Re-enrollment
+/echo "Unblock Re-enrollment"
+/send 00210000029016
+/echo ""
+
+# Select Client Applet
+/echo "Selecting Client Applet"
+/select A00000090501000301
+/echo ""
+
+
+# Close Session
+/close

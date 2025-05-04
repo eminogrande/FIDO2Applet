@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<project name="AppletBuild" default="rebuild" basedir=".">
+
+    <!-- Import Environment Variables -->
+    <property environment="env" />
+    <property name="jcdk.home" value="${env.JC_CLASSIC_HOME}" />
+    <property name="gp.home" value="${env.GP_HOME}" />
+    <property name="jdk.home" value="${env.JAVA_HOME}" />
+
+    <!-- Import of Optional Tasks -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement location="${jcdk.home}/lib/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+
+    <!-- Script Description -->
+    <description>This Ant script generates the CAP Files from JavaCard Projects.</description>
+
+    <!-- Script Settings -->
+    <property name="dir.cap" value="applet" />
+    <property name="dir.exp" value="..\iba\share\exp" />
+    <property name="dir.lib" value="..\iba\share\lib" />
+    <property name="dir.out" value="bin" />
+    <property name="dir.src" value="src" />
+	<!-- property name="lib.myshareable" value="VerifyInterface.jar" -->
+	<property name="lib.myshareable" value="com.idex.iba.service.jar" />
+    <!-- Package Settings -->
+    <property file="build.properties"/>
+
+    <!-- Rebuild the Applet -->
+    <target name="rebuild" description="Rebuild CAP File" depends="clean, build" />
+
+    <!-- Clean the Applet -->
+    <target name="clean" description="Clean CAP File">
+        <delete dir="${dir.out}" />
+        <delete dir="${dir.cap}" />
+    </target>
+
+    <!-- Build the Applet -->
+    <target name="build" description="Build CAP File" depends="-packages.build">
+        <echo message="Java Home: ${jdk.home}" />
+        <echo message="JCDK Home: ${jcdk.home}" />
+        <echo message="GPDK Home: ${gp.home}" />
+    </target>
+
+    <target name="-packages.buildlist">
+        <echo message="Building Package List..."/>
+
+        <!-- Add all packages defined in setting into "packages.list.temp.unsorted" -->
+        <propertyselector property="packages.list.temp.unsorted"
+                          delimiter=","
+                          match="PKG\.([^\.]*)\.NAME"
+                          select="\1"
+                          casesensitive="false"/>
+
+        <!-- Create intermediate variables -->
+        <var name="packages.list.temp.unsorted.refactored" value=""/>
+
+        <!-- For each package in the list -->
+        <for list="${packages.list.temp.unsorted}" param="pkg.id">
+            <sequential>
+                <var name="pkg.build.order" unset="true"/>
+                <var name="pkg.name"        unset="true"/>
+
+                <!-- Copy package information -->
+                <propertycopy property="pkg.build.order" from="PKG.@{pkg.id}.BUILDNR"/>
+                <propertycopy property="pkg.name"        from="PKG.@{pkg.id}.NAME"/>
+                <if>
+                    <!-- Add the package and build order in "packages.list.temp.unsorted.refactored" -->
+                    <equals arg1="${packages.list.temp.unsorted.refactored}" arg2=""/>
+                    <then>
+                        <var name="packages.list.temp.unsorted.refactored"
+                             value="${pkg.build.order}.@{pkg.id}"/>
+                    </then>
+                    <else>
+                        <var name="packages.list.temp.unsorted.refactored"
+                             value="${packages.list.temp.unsorted.refactored},${pkg.build.order}.@{pkg.id}"/>
+                    </else>
+                </if>
+            </sequential>
+        </for>
+
+        <!-- Sort the list by build number -->
+        <sortlist property="packages.list.temp.sorted"
+                  value="${packages.list.temp.unsorted.refactored}"
+                  delimiter="," />
+
+        <!-- Remove the build number from the package name in the list -->
+        <propertyregex property="packages.list"
+                       input="${packages.list.temp.sorted}"
+                       regexp="([0-9]+)\.([^\.^,]*,?)"
+                       replace="\2"
+                       casesensitive="false"/>
+
+        <echo message="Package List: ${packages.list}"/>
+        <echo message="Done..."/>
+    </target>
+
+    <!-- Compile the Packages -->
+    <target name="-packages.compile" depends="-packages.buildlist">
+        <echo message="Compiling Sources..." />
+
+		<var name="lib.custom1" value="${dir.lib}/${lib.myshareable}"/>
+		
+        <echo message="Custom Libraries: "/>
+		<echo message="    - ${lib.custom1}"/>
+
+        <mkdir dir="${dir.out}" />
+        <javac srcdir="${dir.src}" destdir="${dir.out}" source="1.7" target="1.7" includeAntRuntime="false" includeDestClasses="false" classpath="${jcdk.home}/lib/api_classic.jar;${gp.home}/gpapi-globalplatform.jar;${lib.custom1};" verbose="false">
+            <compilerarg value="-g" />
+            <compilerarg value="-version" />
+        </javac>
+        <echo message="Done..." />
+    </target>
+
+    <!-- Generate CAP Files -->
+    <target name="-packages.build.cap" depends="-packages.compile">
+        <mkdir dir="${dir.cap}" />
+
+        <foreach list="${packages.list}"
+                 delimiter=","
+                 target="-package.build.cap"
+                 param="package.id"/>
+    </target>
+
+    <!-- Generate CAP File -->
+    <target name="-package.build.cap">
+        <propertycopy property="pkg.name"           from="PKG.${package.id}.NAME"/>
+        <propertycopy property="pkg.sname"          from="PKG.${package.id}.SNAME"/>
+        <propertycopy property="pkg.path"           from="PKG.${package.id}.PATH"/>
+        <propertycopy property="pkg.version"        from="PKG.${package.id}.VERSION"/>
+        <propertycopy property="pkg.aid"            from="PKG.${package.id}.AID"/>
+        <propertycopy property="pkg.applet"         from="PKG.${package.id}.APPLET"/>
+
+        <echo message="Generate CAP for: ${pkg.name}" />
+
+        <if>
+            <equals arg1="${pkg.applet}" arg2="yes"/>
+            <then>
+                <!-- Add all applets defined in setting into "applets.list" -->
+                <propertyselector casesensitive="false" delimiter="," match="PKG\.${package.id}\.APPLET\.([^\.]*)\.NAME" property="applets.list" select="\1"/>
+                <!-- Create intermediate variables -->
+                <var name="applets.list.temp" value=""/>
+                <var name="jcdk.applets.args" value=""/>
+                <for list="${applets.list}" param="applet.name">
+                    <sequential>
+                        <var name="pkg.applet.name" unset="true"/>
+                        <var name="pkg.applet.aid" unset="true"/>
+                        <propertycopy from="PKG.${package.id}.APPLET.@{applet.name}.NAME" property="pkg.applet.name"/>
+                        <propertycopy from="PKG.${package.id}.APPLET.@{applet.name}.AID" property="pkg.applet.aid"/>
+                        <echo message="Including Applet: ${pkg.applet.name} : ${pkg.applet.aid}"/>
+                        <if>
+                            <!-- Add the package and build order in "packages.list.temp.unsorted.refactored" -->
+                            <equals arg1="${jcdk.applets.args}" arg2=""/>
+                            <then>
+                                <var name="jcdk.applets.args" value=" -applet ${pkg.applet.aid} ${pkg.applet.name} ${pkg.name} ${pkg.aid} ${pkg.version}"/>
+                            </then>
+                            <else>
+                                <var name="jcdk.applets.args" value="${jcdk.applets.args} -applet ${pkg.applet.aid} ${pkg.applet.name} ${pkg.name} ${pkg.aid} ${pkg.version}"/>
+                            </else>
+                        </if>
+                    </sequential>
+                </for>
+                    <echo message="Convert Applet..." />           
+                    <echo message="With Command: ${jcdk.home}/bin/converter.bat -classdir ${dir.out} -d ${dir.out} -exportpath &quot;${dir.out};${dir.lib};${dir.exp};${jcdk.home}\api_export_files;${gp.home}\api_export_files;&quot; -out CAP JCA -nobanner${jcdk.applets.args}" />
+            	<exec executable="${jcdk.home}/bin/converter.bat" failonerror="true">
+                    <arg line="-classdir ${dir.out} -d ${dir.out} -exportpath &quot;${dir.out};${dir.lib};${dir.exp};${jcdk.home}\api_export_files;${gp.home}\api_export_files;&quot; -out CAP JCA -nobanner${jcdk.applets.args}"/>
+                </exec>
+            </then>
+            <else>
+            	<echo message="Convert Package..." />
+            	<echo message="With Command: ${jcdk.home}/bin/converter.bat -classdir ${dir.out} -d ${dir.out} -exportpath &quot;${dir.out};${dir.lib};${dir.exp};${jcdk.home}\api_export_files;${gp.home}\api_export_files;&quot; -out CAP JCA -nobanner  ${pkg.name} ${pkg.aid} ${pkg.version}" />
+                <exec executable="${jcdk.home}/bin/converter.bat" failonerror="true">
+                    <arg line="-classdir ${dir.out} -d ${dir.out} -exportpath &quot;${dir.out};${dir.lib};${dir.exp};${jcdk.home}\api_export_files;${gp.home}\api_export_files;&quot; -out CAP JCA -nobanner  ${pkg.name} ${pkg.aid} ${pkg.version}"/>
+                </exec>
+            </else>
+        </if>
+
+        <copy file="${dir.out}/${pkg.path}/javacard/${pkg.sname}.cap" tofile="${dir.cap}/${pkg.name}.cap"/>
+    </target>
+
+    <!-- Build Packages -->
+    <target name="-packages.build" depends="-packages.build.cap" />
+</project>

@@ -1,0 +1,13 @@
+/terminal
+/card
+
+init-update
+ext-auth plain
+
+/echo ""
+/echo "List All Applets..."
+
+ls
+
+/echo "List All Applets Success!"
+/echo "-----------------------------------------"

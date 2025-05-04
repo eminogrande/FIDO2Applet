@@ -1,0 +1,139 @@
+/terminal
+/card
+
+/mode echo=off trace=on
+
+#REL
+set-key 255/1/AES/74F46B2A4727D97A324FA0979E12D1D1
+set-key 255/2/AES/66DB726D9726A15634738282687D53CE
+set-key 255/3/AES/412F16AE6D90106DBC0920200D81AE01
+
+init-update
+ext-auth plain
+
+
+/echo ""
+/echo "Perso Applet..."
+
+# Select  Applet
+/echo "Selecting  Applet"
+/select A00000090501000101
+/echo ""
+
+# Set DGI 9000 - Enroll PIN
+/echo "Store Data : DGI 9000 / Enroll PIN (1234)"
+/send 00E208000B900008241234FFFFFFFFFF
+/echo ""
+
+# Set DGI 9008 - Enroll PIN PTL
+/echo "Store Data : DGI 9008 / Enroll PIN PTL (3)"
+/send 00E208000490080103
+/echo ""
+
+# Set DGI 9010 - Finger/Touches
+#/echo "Store Data : DGI 9010 / Finger 1 Touches 6"
+#/send 00E208000490100119
+
+/echo "Store Data : DGI 9010 / Finger 2 Touches 6"
+/send 00E20800049010011A
+
+
+# Set DGI 9010 - Finger/Touches
+#/echo "Store Data : DGI 9010 / Finger 2 Touches 4"
+#/send 00E208000490100112
+
+
+# Set DGI 9020 - Topup Options
+#/echo "Store Data : DGI 9020 / Topup Touches: 4"
+#/send 00E208000490200144
+#/echo ""
+
+/echo "Store Data : DGI 9020 / Topup Touches: 0"
+/send 00E208000490200140
+/echo ""
+
+
+# Set DGI 9011 - Enable Sleeve Enroll
+/echo "Store Data : DGI 9011 / Enable Sleeve Enroll"
+/echo "Store Data : DGI 9011 / Enable Qualification Touches"
+/send 00E2080004901101CB
+/echo ""
+
+# Set DGI 9013 - Enable APDU Enroll Options
+/echo "Store Data : DGI 9013 / Enable APDU Enroll"
+/echo "Store Data : DGI 9013 / Enable Qualification Touches"
+#Choose one below
+#/echo "Store Data : DGI 9013 / No Qualification "
+#/send 00E2080004901301C0
+
+#/echo "Store Data : DGI 9013 / Qualification Touches (3/1) "
+/send 00E2080004901301CB
+
+/echo ""
+
+# Set DGI 9015 - Set Enrollment Limit
+/echo "Store Data : DGI 9015"
+#Choose one below
+/echo "Store Data : FF - unlimit"
+/send 00E2080004901501FF
+
+#/echo "Store Data : 02"
+#/send 00E208000490150102
+/echo ""
+
+# Set DGI 9018 - Set CT WFF
+#/echo "Store Data : DGI 9018 / Set CT WFF(5s)"
+#/send 00E208000490180132
+#/echo ""
+
+# Set DGI 9019 - Set CL WFF
+/echo "Store Data : DGI 9019 / Set CL WFF(4s)"
+/send 00E208000490190128
+/echo ""
+
+# Set DGI 9030 - 6A81-Not Supported
+/echo "Store Data : DGI 9030"
+/send 00E208000490300108
+/echo ""
+
+# Set DGI 9100 Set Share AID
+
+/echo "Store Data : DGI 9100 Set Share AID"
+
+# Choose One Below：
+/echo "Store ibaclient AID "
+/send 00E208000C910009A00000090501000301
+
+#/echo "Store Non-ibaclient AID "
+#/send 00E208000E91000B4944455849504141504602 
+
+#/echo "No AID Restriction "
+   
+/echo ""
+
+#Store VERIFY Biometric Try Limit: <= 0x7F
+/send 00E208000491040103
+
+#config iba select response
+/send 00E208000C9102096F071122334455AABB
+
+#config apdu/sio interface
+# Choose one below
+
+#/echo "apdu interface "
+#/send 00E208000491060101
+
+/echo "sio interface "
+#/send 00E208000491060102
+
+/echo "apdu + sio interface "
+/send 00E208000491060103
+
+# Finalize Perso
+/echo "Store Data : Last Store Data"
+/send 00E2880000
+/echo 
+
+
+/echo "Perso  Applet Success!"
+/echo "-----------------------------------------"

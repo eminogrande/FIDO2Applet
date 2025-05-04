@@ -1,0 +1,100 @@
+/terminal
+/card
+
+/mode echo=off trace=on
+
+init-update
+ext-auth plain
+
+
+/echo ""
+/echo "Perso Applet..."
+
+# Select  Applet
+/echo "Selecting  Applet"
+/select A00000090501000101
+
+
+/echo ""
+
+# Set DGI 9000 - Enroll PIN
+/echo "Store Data : DGI 9000 / Enroll PIN (1234)"
+/send 00E208000B900008241234FFFFFFFFFF
+/echo ""
+
+# Set DGI 9008 - Enroll PIN PTL
+/echo "Store Data : DGI 9008 / Enroll PIN PTL (3)"
+/send 00E208000490080103
+/echo ""
+
+
+# Set DGI 9011 - Enable Sleeve Enroll
+/echo "Store Data : DGI 9011 / Enable Sleeve Enroll"
+/echo "Store Data : DGI 9011 / Enable Qualification Touches"
+/send 00E2080004901101CB
+/echo ""
+
+# Set DGI 9013 - Enable APDU Enroll Options
+/echo "Store Data : DGI 9013 / Enable APDU Enroll"
+/echo "Store Data : DGI 9013 / Enable Qualification Touches"
+#/send 00E2080004901301CB
+/send 00E2080004901301C0
+/echo ""
+
+# Set DGI 9015 - Set Enrollment Limit
+/echo "Store Data : DGI 9015 / Set Unlimited Enrollment Attempts"
+#/send 00E2080004901501FF
+/send 00E208000490150102
+/echo ""
+
+# Set DGI 9018 - Set CT WFF
+#/echo "Store Data : DGI 9018 / Set CT WFF(5s)"
+#/send 00E208000490180132
+#/echo ""
+
+# Set DGI 9019 - Set CL WFF
+/echo "Store Data : DGI 9019 / Set CL WFF(4s)"
+/send 00E208000490190128
+/echo ""
+
+# Set DGI 9030 - 6A81-Not Supported
+/echo "Store Data : DGI 9030"
+/send 00E208000490300108
+/echo ""
+
+# Set DGI 9100 Set Share AID
+/echo "Store Data : DGI 9100 Set Share AID"
+
+
+#Store ibaclient AID
+/send 00E208000C910009A00000090501000301
+
+#Store Non-ibaclient AID
+#/send 00E208000E91000B4944455849504141504602 
+
+#No AID Restriction  
+   
+/echo ""
+
+#Store VERIFY Biometric Try Limit
+#Must <= 0x7F
+/send 00E208000491040103
+
+#config select response
+/send 00E208000C9102096F071122334455AABB
+
+#config apdu/sio interface
+#/send 00E208000491060101
+
+#/send 00E208000491060102
+
+/send 00E208000491060103
+
+# Finalize Perso
+/echo "Store Data : Last Store Data"
+/send 00E2880000
+/echo 
+
+
+/echo "Perso  Applet Success!"
+/echo "-----------------------------------------"

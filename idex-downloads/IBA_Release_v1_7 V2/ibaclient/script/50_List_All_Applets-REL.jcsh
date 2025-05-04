@@ -1,0 +1,18 @@
+/terminal
+/card
+
+#REL
+set-key 255/1/AES/74F46B2A4727D97A324FA0979E12D1D1
+set-key 255/2/AES/66DB726D9726A15634738282687D53CE
+set-key 255/3/AES/412F16AE6D90106DBC0920200D81AE01
+
+init-update
+ext-auth plain
+
+/echo ""
+/echo "List All Applets..."
+
+ls
+
+/echo "List All Applets Success!"
+/echo "-----------------------------------------"

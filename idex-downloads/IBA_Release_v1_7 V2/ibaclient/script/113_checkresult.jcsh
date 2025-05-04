@@ -1,0 +1,30 @@
+/terminal 
+/card
+
+/mode echo=off trace=on
+
+# Select  Applet
+/echo "Selecting  Applet"
+/select A00000090501000301
+/echo ""
+
+
+# Check Result
+/echo "Check last verify result"
+/send 005907000100
+/echo ""
+
+
+# Verify Transaction
+/echo "Transaction : Match"
+#/send 005906000100
+/echo ""
+
+# Check Result
+/echo "Check last verify result"
+/send 005907000100
+/echo ""
+
+
+# Close Session
+/close

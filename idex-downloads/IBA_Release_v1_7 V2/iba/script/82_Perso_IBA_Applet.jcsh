@@ -1,0 +1,65 @@
+/terminal
+/card
+
+#/mode echo=off trace=on
+
+init-update
+ext-auth plain
+
+
+/echo ""
+/echo "Perso  Applet..."
+
+# Select  Applet
+/echo "Selecting  Applet"
+/select A00000090501000101
+/echo ""
+
+# Set DGI 9000 - Enroll PIN
+/echo "Store Data : DGI 9000 / Enroll PIN (1234)"
+/send 00E208000B900008241234FFFFFFFFFF
+/echo ""
+
+# Set DGI 9008 - Enroll PIN PTL
+/echo "Store Data : DGI 9008 / Enroll PIN PTL (3)"
+/send 00E208000490080103
+/echo ""
+
+# Set DGI 9009 - Enroll PIN PTR
+#/echo "Store Data : DGI 9009 / Enroll PIN PTR"
+#/send 00E208000490090100
+/echo ""
+
+# Set DGI 9011 - Enable Sleeve Enroll
+/echo "Store Data : DGI 9011 / Enable Sleeve Enroll"
+/send 00E2080004901101C0
+/echo ""
+
+# Set DGI 9013 - Enable APDU Enroll Options
+/echo "Store Data : DGI 9013 / Enable APDU Enroll"
+/send 00E208000490130180
+/echo ""
+
+# Set DGI 9015 - Set Enrollment Limit
+/echo "Store Data : DGI 9015 / Set Unlimited Enrollment Attempts"
+/send 00E2080004901501FF
+/echo ""
+
+# Set DGI 9018 - Set CT WFF
+#/echo "Store Data : DGI 9018 / Set CT WFF(5s)"
+#/send 00E208000490180132
+#/echo ""
+
+# Set DGI 9019 - Set CL WFF
+#/echo "Store Data : DGI 9019 / Set CL WFF(2s)"
+#/send 00E208000490190114
+#/echo ""
+
+# Finalize Perso
+/echo "Store Data : Last Store Data"
+/send 00E2880000
+/echo 
+
+
+/echo "Perso  Applet Success!"
+/echo "-----------------------------------------"

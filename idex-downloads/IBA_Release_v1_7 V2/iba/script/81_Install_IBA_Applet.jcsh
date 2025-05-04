@@ -1,0 +1,17 @@
+/terminal
+/card
+
+init-update
+ext-auth plain
+
+/echo ""
+/echo "Install  Applet..."
+
+install -i A00000090501000101 -q C9#() A000000905010001 A00000090501000101
+
+
+ls
+
+
+/echo "Install  Applet Success!"
+/echo "-----------------------------------------"

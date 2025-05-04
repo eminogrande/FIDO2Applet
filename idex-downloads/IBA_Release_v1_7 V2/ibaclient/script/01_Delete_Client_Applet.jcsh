@@ -1,0 +1,16 @@
+/terminal
+/card
+
+/echo ""
+/echo "Delete Client Applet..."
+
+init-update
+ext-auth plain
+
+delete  A00000090501000301
+delete  -r A000000905010003
+
+ls
+
+/echo "Delete Client Applet Success!"
+/echo "-----------------------------------------"

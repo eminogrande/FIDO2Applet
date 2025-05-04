@@ -1,0 +1,63 @@
+/terminal 
+/card
+
+/mode echo=off trace=on
+
+# Reset Biometrics Data
+/echo "Resets Biometrics Data"
+/send ED57C1000100
+/echo ""
+
+# Select  Applet
+/echo "Selecting  Applet"
+/select A00000090501000101
+/echo ""
+
+# Verify Enroll PIN
+/echo "Verify Enroll PIN"
+/send 0020008008241234FFFFFFFFFF
+/echo ""
+
+# Perform Enroll
+/echo "Enroll : Finger 1 / Touch 1"
+/send 00590300020001
+/echo ""
+
+/echo "Enroll : Finger 1 / Touch 2"
+/send 00590300020001
+/echo ""
+
+/echo "Enroll : Finger 1 / Touch 3"
+/send 00590300020001
+/echo ""
+
+/echo "Enroll : Finger 1 / Touch 4"
+/send 00590300020001
+/echo ""
+
+/echo "Enroll : Finger 1 / Touch 5"
+/send 00590300020001
+/echo ""
+
+/echo "Enroll : Finger 1 / Touch 6"
+/send 00590300020001
+/echo ""
+
+
+# Perform Enroll Qualification
+#/echo "Enroll Qualificaiton"
+#/send 005900000104
+#/echo ""
+
+# Get Enroll Status
+/echo "Enroll : Status"
+/send 005904000100
+/echo ""
+
+# Get Power
+/echo "Enroll: Get Current"
+/send 005901000100
+/echo ""
+
+# Close Session
+/close

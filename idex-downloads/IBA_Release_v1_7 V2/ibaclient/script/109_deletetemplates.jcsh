@@ -1,0 +1,34 @@
+/terminal 
+/card
+
+/mode echo=off trace=on
+
+# Select  Applet
+/echo "Selecting  Applet"
+/select A00000090501000301
+/echo ""
+
+#select card manager
+/send 00A4040000 
+
+# Select  Applet
+/echo "Selecting  Applet"
+/select A00000090501000301
+/echo ""
+
+/echo "Test Delete Template, with SCP: 6985 "
+/send 005908000100
+/echo ""
+
+# Authenticate
+/echo "Authenticate"
+init-update
+ext-auth plain
+
+/echo "Test Delete Template, with SCP "
+/send 005908000100
+/echo ""
+
+
+# Close Session
+/close

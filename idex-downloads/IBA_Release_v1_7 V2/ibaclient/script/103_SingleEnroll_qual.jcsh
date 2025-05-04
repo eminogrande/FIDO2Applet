@@ -1,0 +1,56 @@
+/terminal 
+/card
+
+/mode echo=off trace=on
+
+# Select Client Applet
+/echo "Selecting Client Applet"
+/select A00000090501000301
+/echo ""
+
+auth
+
+/echo "Delete all Finger Templates"
+/send 005902000100
+/echo ""
+
+# Select Client Applet
+/echo "Selecting Client Applet"
+/select A00000090501000301
+/echo ""
+
+# Perform Enroll
+/echo "Enroll : Finger 1 / Touch 1"
+/send 00590300020001
+/echo ""
+
+/echo "Enroll : Finger 1 / Touch 2"
+/send 00590300020001
+/echo ""
+
+/echo "Enroll : Finger 1 / Touch 3"
+/send 00590300020001
+/echo ""
+
+/echo "Enroll : Finger 1 / Touch 4"
+/send 00590300020001
+/echo ""
+
+/echo "Enroll : Finger 1 / Touch 5"
+/send 00590300020001
+/echo ""
+
+/echo "Enroll : Finger 1 / Touch 6"
+/send 00590300020001
+/echo ""
+
+# Perform Enroll Qualification
+/echo "Enroll Qualification"
+/send 005900000100
+/echo ""
+
+# Perform Get Enroll Status
+/echo "Get Enroll Status"
+/send 005904000100
+
+/echo ""

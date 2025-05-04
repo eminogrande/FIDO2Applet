@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="C:/Program Files (x86)/Oracle/jcdk3.0.5/lib/api_classic.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Program%20Files%20(x86)/Oracle/jcdk3.0.5/docs/api/api.zip!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/globalplatform1.7/gpapi-globalplatform.jar"/>
+	<classpathentry kind="lib" path="E:/Javacard/iba/share/lib/com.idex.iba.service.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

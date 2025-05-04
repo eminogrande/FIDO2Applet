@@ -1,0 +1,26 @@
+/terminal
+/card
+
+init-update
+ext-auth plain
+
+/echo ""
+/echo "Upload Client Applet..."
+
+/mode trace off
+if "${applet_path}" == ""
+/echo "Using default Cap file path"
+/set-var applet_path "${script.dir}/../applet/"  # set default if not specified.
+end
+/echo "Cap file path : ${applet_path}"
+
+/echo "Make sure upload the iba share packages first!"
+/echo "If it is already uploaded, then skip!"
+
+#upload -d "${applet_path}/com.idex.iba.share.cap"
+upload -d "${applet_path}/com.idex.client.cap"
+
+ls
+
+/echo "Upload Client Applet Success!"
+/echo "-----------------------------------------"

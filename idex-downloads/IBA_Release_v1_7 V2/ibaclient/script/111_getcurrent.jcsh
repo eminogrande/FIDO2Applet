@@ -1,0 +1,19 @@
+/terminal 
+/card
+
+/mode echo=off trace=on
+
+# Select  Applet
+/echo "Selecting  Applet"
+/select A00000090501000301
+/echo ""
+
+
+# Get Current
+/echo "Transaction : Get Current"
+/send 005901000100
+/echo ""
+
+
+# Close Session
+/close

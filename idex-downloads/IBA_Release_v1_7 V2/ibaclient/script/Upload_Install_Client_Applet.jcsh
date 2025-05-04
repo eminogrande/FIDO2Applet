@@ -1,0 +1,4 @@
+01_Delete_Client_Applet.jcsh
+80_Upload_Client_Applet.jcsh
+81_Install_Client_Applet.jcsh
+50_List_All_Applets
