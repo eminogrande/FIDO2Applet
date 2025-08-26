@@ -18,6 +18,10 @@ public abstract class CannedCBOR {
             0x75, 0x76, 0x6D, // uvm
     };
 
+    static final byte[] PRF_EXTENSION_ID = {
+            0x70, 0x72, 0x66, // prf
+    };
+
     static final byte[] HMAC_SECRET_EXTENSION_ID = {
             0x68, 0x6D, 0x61, 0x63, 0x2D, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74, // hmac-secret
     };
@@ -62,7 +66,7 @@ public abstract class CannedCBOR {
 
     static final byte[] AUTH_INFO_START = {
                 0x02, // map key: extensions
-                    (byte) 0x86, // array - six items
+                    (byte) 0x87, // array - seven items
                     0x63, // string - three bytes long
                         0x75, 0x76, 0x6D, // uvm
                     0x68, // string - eight bytes long
@@ -71,6 +75,8 @@ public abstract class CannedCBOR {
                         0x63, 0x72, 0x65, 0x64, 0x50, 0x72, 0x6F, 0x74, 0x65, 0x63, 0x74, // credProtect
                     0x6B, // string - eleven bytes long
                         0x68, 0x6D, 0x61, 0x63, 0x2D, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74, // hmac-secret
+                    0x63, // string - three bytes long
+                        0x70, 0x72, 0x66, // prf
                     0x6C, // string - twelve bytes long
                         0x6C, 0x61, 0x72, 0x67, 0x65, 0x42, 0x6C, 0x6F, 0x62, 0x4B, 0x65, 0x79, // largeBlobKey
                     0x6C, // string - twelve bytes long

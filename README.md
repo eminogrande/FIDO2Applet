@@ -102,6 +102,7 @@ If you're a really detail-oriented person, you might enjoy reading
 | Basic attestation with ECDSA certs | Implemented (see [install guide](docs/certs.md))      |
 | Webauthn (NOT CTAP!) uvm extension | Implemented                                           |
 | Webauthn devicePubKey extension    | Not implemented                                       |
+| Webauthn prf extension             | Supported (via CTAP hmac-secret)                      |
 | CTAP2.1 hmac-secret extension      | Implemented                                           |
 | CTAP2.1 alwaysUv option            | Implemented                                           |
 | CTAP2.1 credProtect option         | Implemented                                           |
