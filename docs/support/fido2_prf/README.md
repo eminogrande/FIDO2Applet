@@ -45,7 +45,14 @@ For vendor cards shipping with fixed SCP03 keys, substitute the known keys; othe
 
 You can verify the extension advertisement from `authenticatorGetInfo`:
 
-- With the project’s existing Python tests or a small CTAP GetInfo probe, confirm the `extensions` array includes `"prf"` alongside `hmac-secret`, `credBlob`, `largeBlobKey`, `minPinLength`, `credProtect`, etc.
+- With the project’s existing Python tests or the provided probe script, confirm the `extensions` array includes `"prf"` alongside `hmac-secret`, `credBlob`, `largeBlobKey`, `minPinLength`, `credProtect`, etc.
+- Using the probe script (PC/SC):
+
+```
+python3 -m pip install python-fido2 pyscard  # if needed
+python3 tools/ctap_getinfo_prf_check.py --reader "<PCSC Reader Name>"
+# exit code 0 means prf found; 1 means not found
+```
 - Browser WebAuthn testing of PRF requires a platform authenticator or a roaming CTAP HID/NFC authenticator. PC/SC cards are not used directly by browsers.
 
 ## Merge Plan (nuri-com/FIDO2Applet)
@@ -59,4 +66,3 @@ You can verify the extension advertisement from `authenticatorGetInfo`:
 ## Reader and Card Notes
 
 See `docs/support/fido2_prf/CARD_INFO.md` for example PC/SC reader selection and troubleshooting tips.
-
