@@ -1,0 +1,200 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Satochip MuSig2 Web Tools</title>
+  <style>
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin: 2rem; }
+    input[type="text"] { width: 100%; font-family: inherit; }
+    .row { margin-bottom: 1rem; }
+    .grid { display: grid; grid-template-columns: 240px 1fr; gap: 8px; align-items: center; }
+    button { padding: 8px 12px; }
+    pre { background: #f7f7f7; padding: 8px; overflow-x: auto; }
+  </style>
+  <script>
+    async function api(path, method='GET', body) {
+      const opts = { method, headers: { 'Content-Type': 'application/json' } };
+      if (body) opts.body = JSON.stringify(body);
+      const res = await fetch(path, opts);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      return data;
+    }
+
+    async function doStatus() {
+      try {
+        const data = await api('/status');
+        document.getElementById('status').textContent = JSON.stringify(data, null, 2);
+      } catch (e) { alert(e); }
+    }
+
+    async function doVerifyPin() {
+      const pin = document.getElementById('pin').value;
+      try {
+        const data = await api('/verify_pin', 'POST', { pin });
+        document.getElementById('pin_result').textContent = JSON.stringify(data, null, 2);
+      } catch (e) { alert(e); }
+    }
+
+    async function doImportKey() {
+      const slot = parseInt(document.getElementById('slot').value, 10);
+      const k = document.getElementById('privkey').value.trim();
+      try {
+        const data = await api('/import_privkey', 'POST', { slot, privkey_hex: k });
+        document.getElementById('import_result').textContent = JSON.stringify(data, null, 2);
+      } catch (e) { alert(e); }
+    }
+
+    async function doGenNonce() {
+      const keynbr = parseInt(document.getElementById('keynbr').value, 10);
+      const aggpk_hex = document.getElementById('aggpk').value.trim();
+      const msg_hex = document.getElementById('msg').value.trim();
+      const extra_hex = document.getElementById('extra').value.trim();
+      try {
+        const data = await api('/musig2/generate_nonce', 'POST', {
+          keynbr,
+          aggpk_hex: aggpk_hex || null,
+          msg_hex: msg_hex || null,
+          extra_hex: extra_hex || null,
+        });
+        document.getElementById('pubnonce').value = data.pubnonce_hex;
+        document.getElementById('secnonce').value = data.encrypted_secnonce_hex;
+      } catch (e) { alert(e); }
+    }
+
+    async function doSign() {
+      const keynbr = parseInt(document.getElementById('keynbr').value, 10);
+      const secnonce_hex = document.getElementById('secnonce').value.trim();
+      const b_hex = document.getElementById('b').value.trim();
+      const ea_hex = document.getElementById('ea').value.trim();
+      const r_even = document.getElementById('r_even').checked;
+      const ggacc_is_1 = document.getElementById('ggacc').checked;
+      try {
+        const data = await api('/musig2/sign_hash', 'POST', {
+          keynbr, secnonce_hex, b_hex, ea_hex, r_even, ggacc_is_1
+        });
+        document.getElementById('psig').value = data.partial_signature_hex;
+      } catch (e) { alert(e); }
+    }
+  </script>
+</head>
+<body>
+  <h1>Satochip MuSig2 Web Tools</h1>
+
+  <div class="row">
+    <button onclick="doStatus()">Get Status</button>
+    <pre id="status"></pre>
+  </div>
+
+  <h2>Seed + BIP32</h2>
+  <div class="row">
+    <div class="grid">
+      <label>Generate seed on host (bytes) and import to card</label>
+      <input id="seed_len" type="text" value="32" />
+      <div></div>
+      <button onclick="(async()=>{try{const n=parseInt(document.getElementById('seed_len').value,10)||32;const r=await api('/bip32/generate_seed','POST',{length:n});document.getElementById('seed_resp').textContent=JSON.stringify(r,null,2);}catch(e){alert(e)}})()">Generate on host + Import</button>
+      <div></div>
+      <button onclick="(async()=>{try{const n=parseInt(document.getElementById('seed_len').value,10)||32;const pin=document.getElementById('pin').value;const r=await api('/bip32/generate_seed','POST',{length:n,on_card:true,pin});document.getElementById('seed_resp').textContent=JSON.stringify(r,null,2);}catch(e){alert(e)}})()">Generate on card (needs new firmware)</button>
+      <div></div>
+      <button onclick="(async()=>{try{const pin=document.getElementById('pin').value;const r=await api('/bip32/export_seed','POST',{pin});document.getElementById('seed_resp').textContent=JSON.stringify(r,null,2);}catch(e){alert(e)}})()" style="color:#a00">Export seed (dangerous)</button>
+    </div>
+    <pre id="seed_resp"></pre>
+  </div>
+
+  <div class="row">
+    <div class="grid">
+      <label>Derive path</label>
+      <input id="path" type="text" value="m/86'/0'/0'/0/0" />
+      <div></div>
+      <button onclick="(async()=>{try{const path=document.getElementById('path').value.trim();const r=await api('/bip32/derive','POST',{path});document.getElementById('derive_resp').textContent=JSON.stringify(r,null,2);document.getElementById('keynbr').value='255';}catch(e){alert(e)}})()">Derive</button>
+    </div>
+    <pre id="derive_resp"></pre>
+  </div>
+
+  <div class="row">
+    <div class="grid">
+      <label>PIN</label>
+      <input id="pin" type="text" placeholder="123456" />
+      <div></div>
+      <button onclick="doVerifyPin()">Verify PIN</button>
+    </div>
+    <pre id="pin_result"></pre>
+  </div>
+
+  <div class="row">
+    <div class="grid">
+      <label>Import key slot</label>
+      <input id="slot" type="text" value="0" />
+      <label>Privkey (hex 32B)</label>
+      <input id="privkey" type="text" placeholder="7fb9e0..." />
+      <div></div>
+      <button onclick="doImportKey()">Import Privkey</button>
+    </div>
+    <pre id="import_result"></pre>
+  </div>
+
+  <div class="row">
+    <div class="grid">
+      <label>Key number</label>
+      <input id="keynbr" type="text" value="0" />
+      <label>aggpk (hex, optional)</label>
+      <input id="aggpk" type="text" />
+      <label>msg (hex, optional)</label>
+      <input id="msg" type="text" />
+      <label>extra (hex, optional)</label>
+      <input id="extra" type="text" />
+      <div></div>
+      <button onclick="doGenNonce()">Generate Nonce</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="grid">
+      <label>pubnonce (hex)</label>
+      <input id="pubnonce" type="text" />
+      <label>encrypted secnonce (hex)</label>
+      <input id="secnonce" type="text" />
+      <label>b (hex 32B)</label>
+      <input id="b" type="text" value="0000000000000000000000000000000000000000000000000000000000000000" />
+      <label>ea (hex 32B)</label>
+      <input id="ea" type="text" value="0000000000000000000000000000000000000000000000000000000000000000" />
+      <label>R has even Y</label>
+      <input id="r_even" type="checkbox" checked />
+      <label>ggacc is 1</label>
+      <input id="ggacc" type="checkbox" checked />
+      <div></div>
+      <button onclick="doSign()">Sign Hash</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <h2>MuSig2 (2‑party demo)</h2>
+    <div class="grid">
+      <label>PIN (for card ops)</label>
+      <input id="pin_demo" type="text" placeholder="123456" />
+      <label>Path (optional)</label>
+      <input id="path_demo" type="text" value="m/86'/0'/0'/0/0" />
+      <label>Message (hex 32B, optional)</label>
+      <input id="msg_demo" type="text" placeholder="leave empty for random" />
+      <div></div>
+      <button onclick="(async()=>{try{const pin=document.getElementById('pin_demo').value;const path=document.getElementById('path_demo').value;const msg_hex=document.getElementById('msg_demo').value||null;const r=await api('/musig2/demo_two_party','POST',{pin,path,msg_hex});document.getElementById('demo_resp').textContent=JSON.stringify(r,null,2);}catch(e){alert(e)}})()">Run 2‑party demo (valid signature)</button>
+    </div>
+    <pre id="demo_resp"></pre>
+  </div>
+
+  <div class="row">
+    <div class="grid">
+      <label>partial signature (hex)</label>
+      <input id="psig" type="text" />
+    </div>
+  </div>
+
+  <p>
+    Notes:
+    - This UI is a developer tool that calls pysatochip via Flask.
+    - For production MuSig2, compute b/ea/flags per BIP-327.
+    - For BIP32 keys, set key number to 255 (0xFF) after using Derive.
+  </p>
+</body>
+</html>
