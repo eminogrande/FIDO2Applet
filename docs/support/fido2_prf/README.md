@@ -50,7 +50,7 @@ You can verify the extension advertisement from `authenticatorGetInfo`:
 
 ```
 python3 -m pip install python-fido2 pyscard  # if needed
-python3 tools/ctap_getinfo_prf_check.py --reader "<PCSC Reader Name>"
+python3 docs/support/fido2_prf/ctap_getinfo_prf_check.py --reader "<PCSC Reader Name>"
 # exit code 0 means prf found; 1 means not found
 ```
 - Browser WebAuthn testing of PRF requires a platform authenticator or a roaming CTAP HID/NFC authenticator. PC/SC cards are not used directly by browsers.
