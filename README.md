@@ -87,6 +87,13 @@ I suggest [reading the FAQ](docs/FAQ.md) and perhaps [the security model](docs/s
 If you're a really detail-oriented person, you might enjoy reading
 [about the implementation](docs/implementation.md).
 
+## Preservation Tags and Backups
+
+- Tags (on your fork): `preserve/prf-support-2025-08-26`, `preserve/integration-2025-08-26`.
+- Git bundles (local): `backups/feat-prf-support-2025-08-26.bundle`, `backups/main-integration-2025-08-26.bundle`.
+- Zip snapshot (local): `backups/integration-2025-08-26.zip` (contents of `integration/`).
+- See `backups/README.md` for restore steps using git bundles.
+
 ## Implementation Status
 
 | Feature                            | Status                                                |
@@ -102,6 +109,7 @@ If you're a really detail-oriented person, you might enjoy reading
 | Basic attestation with ECDSA certs | Implemented (see [install guide](docs/certs.md))      |
 | Webauthn (NOT CTAP!) uvm extension | Implemented                                           |
 | Webauthn devicePubKey extension    | Not implemented                                       |
+| Webauthn prf extension             | Supported (via CTAP hmac-secret)                      |
 | CTAP2.1 hmac-secret extension      | Implemented                                           |
 | CTAP2.1 alwaysUv option            | Implemented                                           |
 | CTAP2.1 credProtect option         | Implemented                                           |
